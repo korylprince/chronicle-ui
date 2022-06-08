@@ -75,6 +75,8 @@ func RunServer() error {
 		handler = handlers.ProxyHeaders(handler)
 	}
 
+	log.Println("listening on:", config.ListenAddr)
+
 	return http.ListenAndServe(config.ListenAddr, handler)
 }
 
