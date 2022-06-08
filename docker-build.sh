@@ -2,7 +2,7 @@
 
 version=$1
 
-tag="korylprince/chronicle-ui:$version"
+tag="korylprince/chronicle-ui"
 
 docker build --no-cache --build-arg "VERSION=$version" --tag "$tag" .
 

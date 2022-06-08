@@ -12,4 +12,6 @@ RUN apk add --no-cache ca-certificates
 COPY --from=builder /go/bin/fileenv /
 COPY --from=builder /go/bin/chronicle-ui /chronicle-ui
 
+COPY ./setenv.sh /
+
 CMD ["/fileenv", "sh", "/setenv.sh", "/chronicle-ui"]
