@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chronicle UI</title>
+        <style>
+            #wrapper {
+                max-width: 960px;
+                margin: auto;
+            }
+            input[name=page] {
+                width: 40px;
+            }
+            form {
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            form select, form input {
+                margin-right: 10px;
+            }
+            #submitbtn {
+                margin-right: inherit;
+            }
+            #error {
+                text-align: center;
+                color: red;
+            }
+            table {
+                border-spacing: 0px;
+                font-family: monospace;
+            }
+            table th, table td {
+                padding: 5px 10px;
+                text-align: left;
+            }
+            table tr:nth-child(even) {
+                background-color: #ddd;
+            }
+            .ip, .serial, .hostname, .username {
+                cursor: pointer;
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div>
+                <form id="form" method="post">
+                    <label for="field">Field:</label>
+                    <select name="field" id="field">
+                        <option value="user.username" {{if eq .Field "user.username"}}selected{{end}}>Username</option>
+                        <option value="device.serial" {{if eq .Field "device.serial"}}selected{{end}}>Serial</option>
+                        <option value="address.internetip" {{if eq .Field "address.internetip"}}selected{{end}}>IP Address</option>
+                        <option value="device.hostname" {{if eq .Field "device.hostname"}}selected{{end}}>Hostname</option>
+                    </select>
+
+                    <label for="search">Search:</label>
+                    <input name="search" id="search" value="{{.Search}}">
+                    <input name="previousSearch" type="hidden" id="previousSearch" value="{{.PreviousSearch}}">
+
+                    <label for="pageSize">Number of Rows:</label>
+                    <select name="pageSize" id="pageSize">
+                        <option value="10" {{if eq .PageSize 10}}selected{{end}}>10</option>
+                        <option value="25" {{if eq .PageSize 25}}selected{{end}}>25</option>
+                        <option value="50" {{if eq .PageSize 50}}selected{{end}}>50</option>
+                        <option value="100" {{if eq .PageSize 100}}selected{{end}}>100</option>
+                    </select>
+
+                    {{if .Search}}
+                    <label for="page">Page:</label>
+                    <input name="page" id="page" type="number" min="1" value="{{.Page}}">
+                    {{end}}
+
+                    <input type="submit" id="submitbtn" value="Search" {{if not .Search}}disabled{{end}}>
+                </form>
+            </div>
+            {{if .Error}}<div id="error">{{.Error}}</div>{{end}}
+            {{if .Rows}}
+            <table>
+                <tr><th>Time</th><th>IP Address</th><th>Serial</th><th>Hostname</th><th>Username</th><th>Name</th></tr>
+                {{range .Rows}}
+                <tr>
+                    <td class="time">{{.Time}}</td>
+                    <td class="ip">{{.IP}}</td>
+                    <td class="serial">{{.Serial}}</td>
+                    <td class="hostname">{{.Hostname}}</td>
+                    <td class="username">{{.Username}}</td>
+                    <td>{{.Name}}</td>
+                {{end}}
+            </table>
+            {{end}}
+        </div>
+        <script type="text/javascript">
+            document.querySelectorAll(".time").forEach((elem) => {
+                const d = new Date(Date.parse(elem.innerHTML))
+                elem.innerHTML = d.toLocaleString("en-US", {hour: "2-digit", minute: "2-digit", second: "2-digit", year: "numeric", month: "2-digit", day: "2-digit"}).replace(",", "")
+            })
+
+            let formOverride = false
+            document.getElementById("search").addEventListener("keyup", () => {
+                document.getElementById("submitbtn").disabled = document.getElementById("search").value == "" || formOverride
+            })
+
+            document.getElementById("form").addEventListener("submit", () => {
+                formOverride = true
+                document.getElementById("submitbtn").disabled = true
+                document.getElementById("submitbtn").value = "Searching"
+            })
+
+            {{if .Search}}
+            document.getElementById("page").addEventListener("change", () => {
+                document.getElementById("form").requestSubmit()
+            })
+            document.getElementById("pageSize").addEventListener("change", () => {
+                document.getElementById("form").requestSubmit()
+            })
+            {{end}}
+
+            {{if .Rows}}
+            const clickHandler = (field, search) => {
+                return () => {
+                    document.getElementById("field").value = field
+                    document.getElementById("search").value = search
+                    document.getElementById("page").value = 1
+                    document.getElementById("form").requestSubmit()
+                }
+            }
+            document.querySelectorAll(".ip").forEach((elem) => {
+                elem.addEventListener("click", clickHandler("address.internetip", elem.innerHTML))
+            })
+            document.querySelectorAll(".serial").forEach((elem) => {
+                elem.addEventListener("click", clickHandler("device.serial", elem.innerHTML))
+            })
+            document.querySelectorAll(".hostname").forEach((elem) => {
+                elem.addEventListener("click", clickHandler("device.hostname", elem.innerHTML))
+            })
+            document.querySelectorAll(".username").forEach((elem) => {
+                elem.addEventListener("click", clickHandler("user.username", elem.innerHTML))
+            })
+            {{end}}
+        </script>
+    </body>
+</html>
