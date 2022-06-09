@@ -1,12 +1,13 @@
 #!/bin/bash
+set -e
 
 version=$1
 
 tag="korylprince/chronicle-ui"
 
-docker build --no-cache --build-arg "VERSION=$version" --tag "$tag" .
+docker build --no-cache --build-arg "VERSION=$version" --tag "$tag:$version" .
 
-docker push "$tag"
+docker push "$tag:$version"
 
 if [ "$2" = "latest" ]; then
     docker tag "$tag:$version" "$tag:latest"
