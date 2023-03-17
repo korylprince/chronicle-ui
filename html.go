@@ -12,14 +12,19 @@ import (
 //go:embed ui.tmpl
 var tmpl embed.FS
 
+// Tmpl is the embedded ui template
 var Tmpl = template.Must(template.ParseFS(tmpl, "ui.tmpl"))
 
-const InputNameField = "field"
-const InputNameSearch = "search"
-const InputNamePreviousSearch = "previousSearch"
-const InputNamePage = "page"
-const InputNamePageSize = "pageSize"
+// input names
+const (
+	InputNameField          = "field"
+	InputNameSearch         = "search"
+	InputNamePreviousSearch = "previousSearch"
+	InputNamePage           = "page"
+	InputNamePageSize       = "pageSize"
+)
 
+// Form is the data from a submitted form
 type Form struct {
 	Field          string
 	Search         string
@@ -30,6 +35,7 @@ type Form struct {
 	Error          error
 }
 
+// HandleUI is the HTTP handler for the UI
 func (db *DB) HandleUI(r *http.Request) (*Form, error) {
 	form := &Form{Field: "user.username", Page: 1, PageSize: 10}
 	if r.Method == http.MethodPost {

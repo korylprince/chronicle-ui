@@ -16,6 +16,7 @@ func writeBadAuth(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusUnauthorized)
 }
 
+// WithAuth is an HTTP middleware that verifies authentication
 func WithAuth(config *Config, next http.Handler) http.Handler {
 	authConfig := config.AuthConfig()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +42,7 @@ func WithAuth(config *Config, next http.Handler) http.Handler {
 	})
 }
 
+// RunServer starts the server
 func RunServer() error {
 	config := new(Config)
 	err := envconfig.Process("", config)

@@ -6,6 +6,7 @@ import (
 	auth "github.com/korylprince/go-ad-auth/v3"
 )
 
+// Config configure chronicle-ui
 type Config struct {
 	LDAPServer   string `required:"true"`
 	LDAPPort     int    `required:"true" default:"389"`
@@ -19,6 +20,7 @@ type Config struct {
 	ListenAddr   string `default:":80"`
 }
 
+// AuthConfig returns the auth.Config from Config
 func (c *Config) AuthConfig() *auth.Config {
 	config := &auth.Config{
 		Server: c.LDAPServer,

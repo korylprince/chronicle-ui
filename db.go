@@ -43,6 +43,7 @@ var allowedColumns = map[string]struct{}{
 const minPageSize = 10
 const maxPageSize = 100
 
+// ValidationError is a validation error
 type ValidationError struct {
 	Value  string
 	Reason string
@@ -52,10 +53,12 @@ func (e *ValidationError) Error() string {
 	return fmt.Sprintf(`could not validate "%s": %s`, e.Value, e.Reason)
 }
 
+// DB is a sql database
 type DB struct {
 	*sql.DB
 }
 
+// NewDB returns a new DB
 func NewDB(dsn string) (*DB, error) {
 	if !strings.Contains(dsn, "parseTime=true") {
 		return nil, errors.New(`DSN must contain "parseTime=true"`)
@@ -67,6 +70,7 @@ func NewDB(dsn string) (*DB, error) {
 	return &DB{DB: db}, nil
 }
 
+// Row is a database row
 type Row struct {
 	Time     time.Time
 	IP       string
@@ -76,6 +80,7 @@ type Row struct {
 	Name     string
 }
 
+// Query queries the database with paging
 func (db *DB) Query(col, search string, page, pageSize int) ([]*Row, error) {
 	if _, ok := allowedColumns[col]; !ok {
 		return nil, &ValidationError{Value: col, Reason: "not a valid column"}
